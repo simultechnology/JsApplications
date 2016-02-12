@@ -19,7 +19,7 @@ gulp.task('webserver', ['watch'], function() {
       port: 45555,
       livereload: true,
       directoryListing: {
-        enabled: true,
+        enable: true,
         path: 'dist'
       },
       open: true
