@@ -16,7 +16,7 @@ gulp.task('copy', function() {
 gulp.task('webserver', ['watch'], function() {
   gulp.src('dist')
     .pipe(webserver({
-      port: 45555,
+      port: 47777,
       livereload: true,
       directoryListing: {
         enable: true,
