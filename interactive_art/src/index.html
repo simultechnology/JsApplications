@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactive Art</title>
+</head>
+<body>
+  <canvas id="myCanvas" width="500" height="250">
+    Canvasに対応したブラウザを使って下さい。
+  </canvas>
+  <script>
+    (function () {
+      'use strict';
+
+      var canvas;
+      var ctx;
+      var Ball;
+      var balls = [];
+      var Stage;
+      var stage;
+
+      console.log('start!');
+
+      canvas = document.getElementById('myCanvas');
+      if (!canvas || !canvas.getContext) return false;
+      ctx = canvas.getContext('2d');
+
+      function rand(min, max) {
+        // 0-n
+        // Math.floor(Math.random() * (n + 1))
+        // min - max
+        return min + Math.floor(Math.random() * (max - min + 1));
+      }
+
+      canvas.addEventListener('click', function (event) {
+        var x, y, r, rect;
+
+        rect = event.target.getBoundingClientRect();
+        x = event.clientX - rect.left;
+        y = event.clientY - rect.top;
+        r = rand(0, 100) < 20 ? rand(50, 80) : rand(10, 35);
+
+        x = adjustPosition(x, r, canvas.width);
+        y = adjustPosition(y, r, canvas.height);
+
+        var ball = new Ball(x, y, r);
+        balls.push(ball);
+      });
+
+      function adjustPosition(pos, radius, size) {
+        if (pos - radius < 0) pos = radius;
+        if (pos + radius > size) pos = size - radius;
+        return pos;
+      }
+
+      Ball = function (x, y, r) {
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.vx = rand(-10, 10);
+        this.vy = rand(-10, 10);
+        this.color = 'hsla(' + rand(50, 100) + ', ' + rand(40, 80) + '%, ' +
+            rand(50, 60) + '%, ' + Math.random() + ')';
+      };
+
+      Ball.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.closePath();
+        ctx.fill();
+      };
+
+      Ball.prototype.move = function () {
+        if (this.x + this.r > canvas.width || this.x - this.r < 0) {
+          this.vx *= -1;
+          console.log(this.x, this.vx);
+        }
+        if (this.y + this.r > canvas.height || this.y - this.r < 0) {
+          this.vy *= -1;
+        }
+        this.x += this.vx;
+        this.y += this.vy;
+      };
+
+      Stage = function () {
+
+        this.update = function () {
+          var i, l;
+          this.clear();
+          for (i = 0, l = balls.length; i < l; i++) {
+            balls[i].draw();
+            balls[i].move();
+          }
+
+          setTimeout(function () {
+            this.update();
+          }.bind(this), 30);
+        };
+
+        this.clear = function () {
+
+          ctx.fillStyle = '#ecf0f1';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        }
+      };
+
+      stage = new Stage();
+      stage.update();
+
+    } ());
+  </script>
+</body>
+</html>
